@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <title>منصة أمان | الرعاية الصحية المنزلية الذكية</title>
+</head>
+
+<body>
+    <!-- Header / Navigation -->
+    <nav class="glass-nav animate-fade-in">
+        <a href="#" class="logo-text non-style-link">
+            <span>🛡️</span> أمان
+        </a>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+
+        <div class="nav-links">
+            <a href="#services">خدماتنا</a>
+            <a href="#how">كيف نعمل</a>
+            <a href="#faq">الأسئلة الشائعة</a>
+            <a href="login.php" class="hover-underline">تسجيل الدخول</a>
+
+        </div>
+        <a href="signup.php" class="btn-main btn-primary desktop-only-btn"
+            style="background: white; color: var(--primary); border: 2px solid var(--primary);">ابدأ رحلتك الآن</a>
+    </nav>
+    <div class="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content text-center">
+            <div class="hero-badge animate-fade-in">أول منصة رعاية منزلية ذكية في اليمن 🇾🇪</div>
+            <h1 class="hero-title animate-slide-up">صحتك أمانة.. ورعايتنا استثنائية</h1>
+            <p class="hero-subtitle animate-slide-up delay-100">
+                نجمع بين كفاءة المستشفى ودفء المنزل لنقدم لك تجربة علاجية لا مثيل لها، بخصوصية تامة واحترافية عالمية.
+            </p>
+            <div class="cta-container animate-slide-up delay-200"
+                style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="signup.php" class="btn-main btn-primary" style="min-width: 250px;">احجز موعدك الأول</a>
+                <a href="#services" class="btn-main btn-outline"
+                    style="border-color: white; color: white; min-width: 250px;">استكشف خدماتنا</a>
+            </div>
+            <div class="animate-bounce" style="margin-top: 60px; font-size: 2.5rem;">
+                <a href="#services" style="color: white; text-decoration: none;">↓</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section-padding reveal">
+        <div class="section-title">
+            <span style="color: var(--primary); font-weight: 800; letter-spacing: 1px;">خدماتنا المتكاملة</span>
+            <h2>رعاية صحية شاملة تصلك لباب دارك</h2>
+            <p>نقدم باقة متنوعة من الخدمات الطبية التي تلبي احتياجاتك واحتياجات عائلتك بأعلى معايير الجودة.</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <span class="service-icon">🩺</span>
+                <h3>كشف طبي منزلي</h3>
+                <p>زيارات منزلية من قبل أطباء عموم وأخصائيين لتشخيص الحالات وتقديم العلاج اللازم.</p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">💉</span>
+                <h3>تمريض متخصص</h3>
+                <p>خدمات التمريض المنزلي تشمل الحقن، تضميد الجروح، ومتابعة المحاليل والأجهزة الطبية.</p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">🧘‍♂️</span>
+                <h3>علاج طبيعي</h3>
+                <p>جلسات إعادة التأهيل والعلاج الطبيعي لمرضى العظام، الأعصاب، وحالات ما بعد العمليات.</p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">🔬</span>
+                <h3>تحاليل مخبرية</h3>
+                <p>سحب عينات التحاليل من المنزل وإرسال النتائج إلكترونياً وبسرية تامة.</p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">🤱</span>
+                <h3>رعاية كبار السن والأمومة</h3>
+                <p>برامج رعاية متخصصة لكبار السن، ورعاية ما بعد الولادة للأم والطفل.</p>
+            </div>
+            <div class="service-card">
+                <span class="service-icon">📞</span>
+                <h3>استشارات طبية عن بعد</h3>
+                <p>تحدث مع طبيبك المفضل عبر مكالمات فيديو آمنة للحالات التي لا تستدعي زيارة منزلية.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how" class="section-padding reveal" style="background: var(--bg-light);">
+        <div class="section-title">
+            <h2>رحلتك نحو الشفاء</h2>
+            <p>صممنا منصة أمان لتكون سهلة الاستخدام، لنوفر عليك عناء الانتظار والبحث.</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h3>طلب الخدمة</h3>
+                <p>اختر نوع الرعاية الطبية المطلوبة وحدد الوقت الذي يناسبك عبر المنصة.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h3>تأكيد الموعد</h3>
+                <p>سنقوم بمطابقة طلبك مع أفضل مزود خدمة متاح وتأكيد الموعد فوراً.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h3>الزيارة المنزلية</h3>
+                <p>يصلك الكادر الطبي في الموعد المحدد لتقديم رعاية طبية متميزة.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-padding reveal">
+        <div class="section-title">
+            <h2>ماذا يقول عملاؤنا؟</h2>
+            <p>أكثر من 500 عائلة في اليمن تثق بخدمات منصة أمان.</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">"تجربة رائعة بكل المقاييس. وصل الطبيب في الوقت المحدد وكان قمة في الاحترام
+                    والمهنية. وفرتم علينا الكثير من العبء."</p>
+                <div class="client-info">
+                    <div class="client-initials">أ.م</div>
+                    <div>
+                        <h4 style="margin:0;">أحمد محمد</h4>
+                        <p style="margin:0; font-size: 0.9rem; color: var(--text-muted);">مريض - رعاية عظام</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">"خدمة التمريض المنزلي متميزة جداً. الممرضة كانت لطيفة للغاية مع والدتي
+                    المريضة. شكراً لكم على هذا الرقي."</p>
+                <div class="client-info">
+                    <div class="client-initials">س.خ</div>
+                    <div>
+                        <h4 style="margin:0;">سارة خالد</h4>
+                        <p style="margin:0; font-size: 0.9rem; color: var(--text-muted);">ابنة مريضة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners-slider reveal">
+        <div class="section-title" style="margin-bottom: 40px;">
+            <h3>شبكة شركائنا المعتمدة</h3>
+        </div>
+        <div class="partners-track">
+            <div class="partner-item">
+                <h4>المستشفى الجمهوري</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مركز القلب</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مستشفى الثورة</h4>
+            </div>
+            <div class="partner-item">
+                <h4>جمعية الهلال الأحمر</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مجمع آزال الطبي</h4>
+            </div>
+            <!-- Duplicate for infinite scroll -->
+            <div class="partner-item">
+                <h4>المستشفى الجمهوري</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مركز القلب</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مستشفى الثورة</h4>
+            </div>
+            <div class="partner-item">
+                <h4>جمعية الهلال الأحمر</h4>
+            </div>
+            <div class="partner-item">
+                <h4>مجمع آزال الطبي</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section-padding reveal">
+        <div class="section-title">
+            <h2>أسئلة تهمك</h2>
+            <p>إجابات سريعة على تساؤلاتكم الأكثر شيوعاً.</p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">هل يمكنني اختيار طبيب معين؟ <span>+</span></div>
+                <div class="faq-answer">نعم، يمكنك تصفح قائمة الأطباء المتاحين في كل تخصص، والاطلاع على تقييماتهم
+                    وخبراتهم قبل حجز الموعد.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">ماذا لو احتجت لخدمة طارئة؟ <span>+</span></div>
+                <div class="faq-answer">منصة أمان مخصصة للرعاية المنزلية المجدولة. في الحالات الطارئة جداً، يُرجى دائماً
+                    التوجه لأقرب مركز طوارئ فوري.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">هل هناك تخفيضات للعائلات أو الجلسات المتكررة؟ <span>+</span></div>
+                <div class="faq-answer">نعم، نوفر باقات خاصة وحسومات للجلسات المتكررة لعلاج الحالات المزمنة أو كبار
+                    السن. تواصل معنا للمزيد.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-info">
+                <div class="footer-logo">أمان</div>
+                <p style="line-height: 1.8; opacity: 0.8; font-size: 1.1rem;">نحن نؤمن بأن الرعاية الصحية حق إنساني يجب
+                    أن يصل للجميع بكرامة واحترافية، ومن هنا بدأت رحلة "أمان" لتكون يد العون لكل مريض في بيته.</p>
+                <div class="social-icons">
+                    <span>🌐</span> <span>📱</span> <span>📧</span>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3 style="margin-bottom: 30px; font-size: 1.6rem;">استكشف</h3>
+                <ul>
+                    <li><a href="#services">خدماتنا</a></li>
+                    <li><a href="#how">قصتنا</a></li>
+                    <li><a href="#faq">الأسئلة الشائعة</a></li>
+                    <li><a href="signup.php">انضم كطبيب</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h3 style="margin-bottom: 30px; font-size: 1.6rem;">مكاتبنا</h3>
+                <p><strong>المقر الرئيسي:</strong><br>صنعاء - عمارة الهلال، الدور الرابع</p>
+                <br>
+                <p><strong>الهاتف الموحد:</strong><br>8001234 (مجاني)</p>
+            </div>
+        </div>
+
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 60px 0;">
+
+        <div class="text-center" style="opacity: 0.6;">
+            <p>جميع الحقوق محفوظة لمنصة أمان للرعاية الصحية الذكية &copy; 2026</p>
+            <p style="margin-top: 15px;">صنع بكل ❤️ في اليمن</p>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll Reveal
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Trigger on load
+
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const wasActive = item.classList.contains('active');
+
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('span').textContent = '+';
+                });
+
+                if (!wasActive) {
+                    item.classList.add('active');
+                    button.querySelector('span').textContent = '-';
+                }
+            });
+        });
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+            document.querySelector('.mobile-menu-overlay').classList.toggle('active');
+            const btn = document.querySelector('.mobile-menu-btn');
+            btn.textContent = document.querySelector('.nav-links').classList.contains('active') ? '✕' : '☰';
+        }
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-links').classList.remove('active');
+                document.querySelector('.mobile-menu-overlay').classList.remove('active');
+                document.querySelector('.mobile-menu-btn').textContent = '☰';
+            });
+        });
+    </script>
+</body>
+
+</html>
