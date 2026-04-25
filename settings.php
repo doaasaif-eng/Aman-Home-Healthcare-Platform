@@ -60,7 +60,7 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='p'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
             header("location: ../login.php");
         }else{
             $useremail=$_SESSION["user"];
@@ -70,14 +70,10 @@
     }
     
     include("../connection.php");
-    $sqlmain= "select * from patient where pemail=?";
-    $stmt = $database->prepare($sqlmain);
-    $stmt->bind_param("s",$useremail);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $userfetch=$result->fetch_assoc();
-    $userid= $userfetch["pid"];
-    $username=$userfetch["pname"];
+    $userrow = $database->query("select * from doctor where docemail='$useremail'");
+    $userfetch=$userrow->fetch_assoc();
+    $userid= $userfetch["docid"];
+    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -104,28 +100,28 @@
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-home " >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">الرئيسية</p></a></div></a>
+                    <td class="menu-btn menu-icon-dashbord" >
+                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-doctor">
-                        <a href="doctors.php" class="non-style-link-menu"><div><p class="menu-text">مزودي الخدمات</p></a></div>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجلسات المتاحة</p></div></a>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
                     <td class="menu-btn menu-icon-appoinment">
                         <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">حجوزاتي</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
+                    <td class="menu-btn menu-icon-session">
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
+                    </td>
+                </tr>
+                <tr class="menu-row" >
+                    <td class="menu-btn menu-icon-patient">
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
+                    </td>
+                </tr>
+                <tr class="menu-row" >
                     <td class="menu-btn menu-icon-settings  menu-active menu-icon-settings-active">
-                        <a href="settings.php" class="non-style-link-menu  non-style-link-menu-active"><div><p class="menu-text">الإعدادات</p></a></div>
+                        <a href="settings.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">الإعدادات</p></a></div>
                     </td>
                 </tr>
             </table>
@@ -232,7 +228,7 @@
                         <a class="close" href="settings.php">&times;</a>
                         <div class="content">أنت على وشك حذف حسابك<br>('.substr($nameget,0,40).').</div>
                         <div style="display: flex;justify-content: center;">
-                        <a href="delete-account.php?id='.$id.'" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;نعم&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
+                        <a href="delete-doctor.php?id='.$id.'" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;نعم&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
                         <a href="settings.php" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"><font class="tn-in-text">&nbsp;&nbsp;لا&nbsp;&nbsp;</font></button></a>
                         </div>
                     </center>
@@ -240,18 +236,17 @@
             </div>
             ';
         }elseif($action=='view'){
-            $sqlmain= "select * from patient where pid=?";
-            $stmt = $database->prepare($sqlmain);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            $sqlmain= "select * from doctor where docid='$id'";
+            $result= $database->query($sqlmain);
             $row=$result->fetch_assoc();
-            $name=$row["pname"];
-            $email=$row["pemail"];
-            $address=$row["paddress"];
-            $dob=$row["pdob"];
-            $nic=$row['pnic'];
-            $tele=$row['ptel'];
+            $name=$row["docname"];
+            $email=$row["docemail"];
+            $spe=$row["specialties"];
+            $spcil_res= $database->query("select sname from specialties where id='$spe'");
+            $spcil_array= $spcil_res->fetch_assoc();
+            $spcil_name=$spcil_array["sname"];
+            $nic=$row['docnic'];
+            $tele=$row['doctel'];
             echo '
             <div id="popup1" class="overlay">
                     <div class="popup">
@@ -306,22 +301,12 @@
                             </tr>
                             <tr>
                                 <td class="label-td" colspan="2">
-                                    <label for="spec" class="form-label">العنوان: </label>
+                                    <label for="spec" class="form-label">التخصص: </label>
                                 </td>
                             </tr>
                             <tr>
                             <td class="label-td" colspan="2">
-                            '.$address.'<br><br>
-                            </td>
-                            </tr>
-                            <tr>
-                                <td class="label-td" colspan="2">
-                                    <label for="spec" class="form-label">تاريخ الميلاد: </label>
-                                </td>
-                            </tr>
-                            <tr>
-                            <td class="label-td" colspan="2">
-                            '.$dob.'<br><br>
+                            '.$spcil_name.'<br><br>
                             </td>
                             </tr>
                             <tr>
@@ -337,17 +322,17 @@
             </div>
             ';
         }elseif($action=='edit'){
-            $sqlmain= "select * from patient where pid=?";
-            $stmt = $database->prepare($sqlmain);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            $sqlmain= "select * from doctor where docid='$id'";
+            $result= $database->query($sqlmain);
             $row=$result->fetch_assoc();
-            $name=$row["pname"];
-            $email=$row["pemail"];
-            $address=$row["paddress"];
-            $nic=$row['pnic'];
-            $tele=$row['ptel'];
+            $name=$row["docname"];
+            $email=$row["docemail"];
+            $spe=$row["specialties"];
+            $spcil_res= $database->query("select sname from specialties where id='$spe'");
+            $spcil_array= $spcil_res->fetch_assoc();
+            $spcil_name=$spcil_array["sname"];
+            $nic=$row['docnic'];
+            $tele=$row['doctel'];
             $error_1=$_GET["error"];
                 $errorlist= array(
                     '1'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">هذا البريد الإلكتروني مستخدم بالفعل.</label>',
@@ -373,13 +358,13 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p style="padding: 0;margin: 0;text-align: right;font-size: 25px;font-weight: 500;">تعديل تفاصيل الحساب</p>
+                                            <p style="padding: 0;margin: 0;text-align: right;font-size: 25px;font-weight: 500;">تعديل تفاصيل المزود</p>
                                         ID : '.$id.' <br><br>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="label-td" colspan="2">
-                                            <form action="edit-user.php" method="POST" class="add-new-form">
+                                            <form action="edit-doc.php" method="POST" class="add-new-form">
                                             <label for="Email" class="form-label">البريد الإلكتروني: </label>
                                             <input type="hidden" value="'.$id.'" name="id00">
                                         </td>
@@ -397,7 +382,7 @@
                                     </tr>
                                     <tr>
                                         <td class="label-td" colspan="2">
-                                            <input type="text" name="name" class="input-text" placeholder="اسم المستخدم" value="'.$name.'" required><br>
+                                            <input type="text" name="name" class="input-text" placeholder="اسم المزود" value="'.$name.'" required><br>
                                         </td>
                                     </tr>
                                     <tr>
@@ -422,12 +407,20 @@
                                     </tr>
                                     <tr>
                                         <td class="label-td" colspan="2">
-                                            <label for="spec" class="form-label">العنوان</label>
+                                            <label for="spec" class="form-label">اختر التخصص: (الحالي: '.$spcil_name.')</label>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="label-td" colspan="2">
-                                        <input type="text" name="address" class="input-text" placeholder="العنوان" value="'.$address.'" required><br>
+                                            <select name="spec" id="" class="box">';
+                                                $list11 = $database->query("select * from specialties;");
+                                                for ($y=0;$y<$list11->num_rows;$y++){
+                                                    $row00=$list11->fetch_assoc();
+                                                    $sn=$row00["sname"];
+                                                    $id00=$row00["id"];
+                                                    echo "<option value=".$id00.">$sn</option><br/>";
+                                                };
+                                echo     '       </select><br><br>
                                         </td>
                                     </tr>
                                     <tr>
@@ -485,6 +478,6 @@
     ';
         }; }
     }
-    ?>
+        ?>
 </body>
 </html>

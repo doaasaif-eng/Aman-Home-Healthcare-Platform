@@ -60,7 +60,7 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='p'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
             header("location: ../login.php");
         }else{
             $useremail=$_SESSION["user"];
@@ -70,10 +70,10 @@
     }
     
     include("../connection.php");
-    $userrow = $database->query("select * from patient where pemail='$useremail'");
+    $userrow = $database->query("select * from doctor where docemail='$useremail'");
     $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["pid"];
-    $username=$userfetch["pname"];
+    $userid= $userfetch["docid"];
+    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -100,8 +100,8 @@
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-home " >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">الرئيسية</p></a></div></a>
+                    <td class="menu-btn menu-icon-dashbord" >
+                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
@@ -111,12 +111,17 @@
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجلسات المتاحة</p></div></a>
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-appoinment">
                         <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">حجوزاتي</p></a></div>
+                    </td>
+                </tr>
+                <tr class="menu-row" >
+                    <td class="menu-btn menu-icon-patient">
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
@@ -225,8 +230,6 @@
                                         <td>
                                         <div style="display:flex;justify-content: center;">
                                         <a href="?action=view&id='.$docid.'" class="non-style-link"><button  class="btn-primary-soft btn button-icon btn-view"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">عرض</font></button></a>
-                                       &nbsp;&nbsp;&nbsp;
-                                       <a href="?action=session&id='.$docid.'&name='.$name.'"  class="non-style-link"><button  class="btn-primary-soft btn button-icon menu-icon-session-active"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">الجلسات</font></button></a>
                                         </div>
                                         </td>
                                     </tr>';
@@ -237,7 +240,7 @@
                         </table>
                         </div>
                         </center>
-                   </td> 
+                    </td> 
                 </tr>
             </table>
         </div>
@@ -338,28 +341,8 @@
             </div>
             </div>
             ';
-        }elseif($action=='session'){
-            $name=$_GET["name"];
-            echo '
-            <div id="popup1" class="overlay">
-                    <div class="popup">
-                    <center>
-                        <h2>هل تريد عرض جلسات المزود؟</h2>
-                        <a class="close" href="doctors.php">&times;</a>
-                        <div class="content">عرض جميع الجلسات المتاحة بواسطة <br>('.substr($name,0,40).').</div>
-                        <form action="schedule.php" method="post" style="display: flex">
-                        <input type="hidden" name="search" value="'.$name.'">
-                        <div style="display: flex;justify-content:center;margin-top:20px;width:100%">
-                        <input type="submit"  value="نعم" class="btn-primary btn" style="padding:10px 40px"  >
-                        </div>
-                        </form>
-                    </center>
-            </div>
-            </div>
-            ';
         }
     };
 ?>
-</div>
 </body>
 </html>

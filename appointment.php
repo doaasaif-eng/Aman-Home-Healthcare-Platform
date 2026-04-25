@@ -16,13 +16,7 @@
         .sub-table{
             animation: slideUp 0.6s ease forwards;
         }
-        .search-items {
-            transition: all 0.3s ease;
-        }
-        .search-items:hover {
-            transform: translateY(-5px);
-        }
-        
+
         /* Mobile Menu Toggle */
         .menu-toggle {
             display: none;
@@ -66,7 +60,7 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='p'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
             header("location: ../login.php");
         }else{
             $useremail=$_SESSION["user"];
@@ -76,26 +70,10 @@
     }
     
     include("../connection.php");
-    $sqlmain= "select * from patient where pemail=?";
-    $stmt = $database->prepare($sqlmain);
-    $stmt->bind_param("s",$useremail);
-    $stmt->execute();
-    $userrow = $stmt->get_result();
+    $userrow = $database->query("select * from doctor where docemail='$useremail'");
     $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["pid"];
-    $username=$userfetch["pname"];
-
-    $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  where  patient.pid=$userid ";
-
-    if($_POST){
-        if(!empty($_POST["sheduledate"])){
-            $sheduledate=$_POST["sheduledate"];
-            $sqlmain.=" and schedule.scheduledate='$sheduledate' ";
-        };
-    }
-
-    $sqlmain.="order by appointment.appodate asc";
-    $result= $database->query($sqlmain);
+    $userid= $userfetch["docid"];
+    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -122,23 +100,23 @@
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-home" >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">الرئيسية</p></a></div></a>
+                    <td class="menu-btn menu-icon-dashbord " >
+                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-doctor">
-                        <a href="doctors.php" class="non-style-link-menu"><div><p class="menu-text">مزودي الخدمات</p></a></div>
+                    <td class="menu-btn menu-icon-appoinment  menu-active menu-icon-appoinment-active">
+                        <a href="appointment.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">حجوزاتي</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجلسات المتاحة</p></div></a>
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-appoinment  menu-active menu-icon-appoinment-active">
-                        <a href="appointment.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">حجوزاتي</p></a></div>
+                    <td class="menu-btn menu-icon-patient">
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
@@ -155,7 +133,7 @@
                     <a href="appointment.php" ><button  class="login-btn btn-primary-soft btn btn-icon-back"  style="padding-top:11px;padding-bottom:11px;margin-right:20px;width:125px"><font class="tn-in-text">العودة</font></button></a>
                     </td>
                     <td>
-                        <p style="font-size: 23px;padding-right:12px;font-weight: 600;">سجل حجوزاتي</p>
+                        <p style="font-size: 23px;padding-right:12px;font-weight: 600;">مدير الحجوزات</p>
                     </td>
                     <td width="15%">
                         <p style="font-size: 14px;color: #64748b;padding: 0;margin: 0;text-align: left;">التاريخ</p>
@@ -164,6 +142,7 @@
                             date_default_timezone_set('Asia/Aden');
                             $today = date('Y-m-d');
                             echo $today;
+                            $list110 = $database->query("select * from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  where  doctor.docid=$userid ");
                             ?>
                         </p>
                     </td>
@@ -171,9 +150,10 @@
                         <button  class="btn-label"  style="display: flex;justify-content: center;align-items: center;"><img src="../img/calendar.svg" width="100%"></button>
                     </td>
                 </tr>
+               
                 <tr>
                     <td colspan="4" style="padding-top:10px;width: 100%;" >
-                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">حجوزاتي (<?php echo $result->num_rows; ?>)</p>
+                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">حجوزاتي (<?php echo $list110->num_rows; ?>)</p>
                     </td>
                 </tr>
                 <tr>
@@ -196,13 +176,35 @@
                         </center>
                     </td>
                 </tr>
+                
+                <?php
+                    $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  where  doctor.docid=$userid ";
+                    if($_POST){
+                        if(!empty($_POST["sheduledate"])){
+                            $sheduledate=$_POST["sheduledate"];
+                            $sqlmain.=" and schedule.scheduledate='$sheduledate' ";
+                        };
+                    }
+                ?>
+                  
                 <tr>
                    <td colspan="4">
                        <center>
                         <div class="abc scroll">
-                        <table width="93%" class="sub-table scrolldown" border="0" style="border:none">
+                        <table width="93%" class="sub-table scrolldown" border="0">
+                        <thead>
+                        <tr>
+                            <th class="table-headin">اسم المريض</th>
+                            <th class="table-headin">رقم الحجز</th>
+                            <th class="table-headin">عنوان الجلسة</th>
+                            <th class="table-headin">تاريخ ووقت الجلسة</th>
+                            <th class="table-headin">تاريخ الحجز</th>
+                            <th class="table-headin">العمليات</th>
+                        </tr>
+                        </thead>
                         <tbody>
                             <?php
+                                $result= $database->query($sqlmain);
                                 if($result->num_rows==0){
                                     echo '<tr>
                                     <td colspan="7">
@@ -210,8 +212,8 @@
                                     <center>
                                     <img src="../img/notfound.svg" width="25%">
                                     <br>
-                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي حجز متعلق بالبحث!</p>
-                                    <a class="non-style-link" href="appointment.php"><button  class="login-btn btn-primary-soft btn"  style="display: flex;justify-content: center;align-items: center;margin-right:20px;">&nbsp; عرض جميع الحجوزات &nbsp;</button>
+                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي شيء يتعلق بكلمات البحث!</p>
+                                    <a class="non-style-link" href="appointment.php"><button  class="login-btn btn-primary-soft btn"  style="display: flex;justify-content: center;align-items: center;margin-right:20px;">&nbsp; عرض الكل &nbsp;</button>
                                     </a>
                                     </center>
                                     <br><br><br><br>
@@ -219,57 +221,29 @@
                                     </tr>';
                                 }
                                 else{
-                                    for ( $x=0; $x<($result->num_rows);$x++){
-                                        echo "<tr>";
-                                        for($q=0;$q<3;$q++){
-                                            $row=$result->fetch_assoc();
-                                            if (!isset($row)){
-                                            break;
-                                            };
-                                            $scheduleid=$row["scheduleid"];
-                                            $title=$row["title"];
-                                            $docname=$row["docname"];
-                                            $scheduledate=$row["scheduledate"];
-                                            $scheduletime=$row["scheduletime"];
-                                            $apponum=$row["apponum"];
-                                            $appodate=$row["appodate"];
-                                            $appoid=$row["appoid"];
-                                            if($scheduleid==""){
-                                                break;
-                                            }
-                                            echo '
-                                            <td style="width: 25%;">
-                                                    <div  class="dashboard-items search-items"  >
-                                                        <div style="width:100%;">
-                                                        <div class="h3-search">
-                                                                    تاريخ الحجز: '.substr($appodate,0,30).'<br>
-                                                                    رقم مرجعي: AMN-000-'.$appoid.'
-                                                                </div>
-                                                                <div class="h1-search">
-                                                                    '.substr($title,0,21).'<br>
-                                                                </div>
-                                                                <div class="h3-search">
-                                                                    رقم الموعد:<div class="h1-search">0'.$apponum.'</div>
-                                                                </div>
-                                                                <div class="h3-search">
-                                                                    '.substr($docname,0,30).'
-                                                                </div>
-                                                                <div class="h4-search">
-                                                                    التاريخ المجدول: '.$scheduledate.'<br>يبدأ: <b>@'.substr($scheduletime,0,5).'</b> (24 س)
-                                                                </div>
-                                                                <br>';
-                                                                
-                                                                if($scheduledate < $today){
-                                                                    echo '<a href="?action=rate&id='.$appoid.'&doc='.$docname.'&title='.$title.'" ><button class="login-btn btn-primary btn" style="padding-top:11px;padding-bottom:11px;width:100%">تقييم الخدمة ⭐</button></a>';
-                                                                } else {
-                                                                    echo '<a href="?action=drop&id='.$appoid.'&title='.$title.'&doc='.$docname.'" ><button class="login-btn btn-primary-soft btn" style="padding-top:11px;padding-bottom:11px;width:100%"><font class="tn-in-text">إلغاء الحجز</font></button></a>';
-                                                                }
-                                                                
-                                            echo '       </div>
-                                                    </div>
-                                                </td>';
-                                        }
-                                        echo "</tr>";
+                                for ( $x=0; $x<$result->num_rows;$x++){
+                                    $row=$result->fetch_assoc();
+                                    $appoid=$row["appoid"];
+                                    $scheduleid=$row["scheduleid"];
+                                    $title=$row["title"];
+                                    $docname=$row["docname"];
+                                    $scheduledate=$row["scheduledate"];
+                                    $scheduletime=$row["scheduletime"];
+                                    $pname=$row["pname"];
+                                    $apponum=$row["apponum"];
+                                    $appodate=$row["appodate"];
+                                    echo '<tr >
+                                        <td style="font-weight:600;"> &nbsp;'.substr($pname,0,25).'</td >
+                                        <td style="text-align:center;font-size:23px;font-weight:500; color: #059669;">'.$apponum.'</td>
+                                        <td>'.substr($title,0,15).'</td>
+                                        <td style="text-align:center;;">'.substr($scheduledate,0,10).' @'.substr($scheduletime,0,5).'</td>
+                                        <td style="text-align:center;">'.$appodate.'</td>
+                                        <td>
+                                        <div style="display:flex;justify-content: center;">
+                                        <a href="?action=drop&id='.$appoid.'&name='.$pname.'&session='.$title.'&apponum='.$apponum.'" class="non-style-link"><button  class="btn-primary-soft btn button-icon btn-delete"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">إلغاء</font></button></a>
+                                        &nbsp;&nbsp;&nbsp;</div>
+                                        </td>
+                                    </tr>';
                                 }
                             }
                             ?>
@@ -286,28 +260,10 @@
     if($_GET){
         $id=$_GET["id"];
         $action=$_GET["action"];
-        if($action=='booking-added'){
-            echo '
-            <div id="popup1" class="overlay">
-                    <div class="popup">
-                    <center>
-                    <br><br>
-                        <h2>تم الحجز بنجاح.</h2>
-                        <a class="close" href="appointment.php">&times;</a>
-                        <div class="content">
-                        رقم موعدك هو '.$id.'.<br><br>
-                        </div>
-                        <div style="display: flex;justify-content: center;">
-                        <a href="appointment.php" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"><font class="tn-in-text">&nbsp;&nbsp;حسناً&nbsp;&nbsp;</font></button></a>
-                        <br><br><br><br>
-                        </div>
-                    </center>
-            </div>
-            </div>
-            ';
-        }elseif($action=='drop'){
-            $title=$_GET["title"];
-            $docname=$_GET["doc"];
+        if($action=='drop'){
+            $nameget=$_GET["name"];
+            $session=$_GET["session"];
+            $apponum=$_GET["apponum"];
             echo '
             <div id="popup1" class="overlay">
                     <div class="popup">
@@ -315,9 +271,9 @@
                         <h2>هل أنت متأكد؟</h2>
                         <a class="close" href="appointment.php">&times;</a>
                         <div class="content">
-                            هل تريد فعلاً إلغاء هذا الموعد؟<br><br>
-                            اسم الجلسة: &nbsp;<b>'.substr($title,0,40).'</b><br>
-                            اسم المزود&nbsp; : <b>'.substr($docname,0,40).'</b><br><br>
+                            أنت على وشك إلغاء هذا الحجز<br><br>
+                            اسم المريض: &nbsp;<b>'.substr($nameget,0,40).'</b><br>
+                            رقم الحجز &nbsp; : <b>'.substr($apponum,0,40).'</b><br><br>
                         </div>
                         <div style="display: flex;justify-content: center;">
                         <a href="delete-appointment.php?id='.$id.'" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;نعم&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
@@ -327,42 +283,9 @@
             </div>
             </div>
             '; 
-        }elseif($action=='rate'){
-            $title=$_GET["title"];
-            $docname=$_GET["doc"];
-            echo '
-            <div id="popup1" class="overlay">
-                    <div class="popup animate-scale-in">
-                    <center>
-                    <a class="close" href="appointment.php">&times;</a>
-                    <div style="padding:20px; text-align:right;">
-                        <h2 style="color:var(--primary);">تقييم الخدمة الممتازة</h2>
-                        <p>نحن نقدر رأيك في <b>'.$docname.'</b> بخصوص جلسة <b>'.$title.'</b>.</p>
-                        <form action="submit-review.php" method="post">
-                            <input type="hidden" name="appoid" value="'.$id.'">
-                            <label class="form-label">التقييم:</label>
-                            <select name="rating" class="input-text" style="margin-bottom:15px;">
-                                <option value="5">⭐⭐⭐⭐⭐ ممتاز</option>
-                                <option value="4">⭐⭐⭐⭐ جيد جداً</option>
-                                <option value="3">⭐⭐⭐ جيد</option>
-                                <option value="2">⭐⭐ مقبول</option>
-                                <option value="1">⭐ ضعيف</option>
-                            </select>
-                            <label class="form-label">رأيك بالتفصيل:</label>
-                            <textarea name="comment" class="input-text" rows="4" style="height:auto; margin-bottom:20px;" placeholder="اكتب ملاحظاتك هنا..."></textarea>
-                            <div style="display:flex; justify-content:center; gap:10px;">
-                                <input type="submit" value="إرسال التقييم" class="login-btn btn-primary btn">
-                                <a href="appointment.php"><input type="button" value="إلغاء" class="login-btn btn-primary-soft btn"></a>
-                            </div>
-                        </form>
-                    </div>
-                    </center>
-            </div>
-            </div>
-            '; 
         }
     }
-?>
+    ?>
     </div>
 </body>
 </html>
