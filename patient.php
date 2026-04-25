@@ -16,13 +16,6 @@
         .sub-table{
             animation: slideUp 0.6s ease forwards;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        }
 
         /* Mobile Menu Toggle */
         .menu-toggle {
@@ -67,20 +60,14 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
             header("location: ../login.php");
-        }else{
-            $useremail=$_SESSION["user"];
         }
     }else{
         header("location: ../login.php");
     }
     
     include("../connection.php");
-    $userrow = $database->query("select * from doctor where docemail='$useremail'");
-    $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["docid"];
-    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -94,13 +81,13 @@
                                     <img src="../img/user.png" alt="" width="100%" style="border-radius:50%">
                                 </td>
                                 <td style="padding:0px;margin:0px;">
-                                    <p class="profile-title"><?php echo substr($username,0,13)  ?>..</p>
-                                    <p class="profile-subtitle"><?php echo substr($useremail,0,22)  ?></p>
+                                    <p class="profile-title">مدير النظام</p>
+                                    <p class="profile-subtitle">admin@aman.com</p>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <a href="../logout.php" ><input type="button" value="تسجيل خروج" class="logout-btn btn-primary-soft btn"></a>
+                                <a href="../logout.php" ><input type="button" value="تسجيل خروج" class="logout-btn btn-primary-soft btn"></a>
                                 </td>
                             </tr>
                     </table>
@@ -108,58 +95,32 @@
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-dashbord" >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
+                        <a href="index.php" class="non-style-link-menu"><div><p class="menu-text">لوحة التحكم</p></a></div></a>
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-doctor ">
+                        <a href="doctors.php" class="non-style-link-menu "><div><p class="menu-text">مزودي الخدمات</p></a></div>
+                    </td>
+                </tr>
+                <tr class="menu-row" >
+                    <td class="menu-btn menu-icon-schedule">
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجدول الزمني</p></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
                     <td class="menu-btn menu-icon-appoinment">
-                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">حجوزاتي</p></a></div>
+                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">الحجوزات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-patient menu-active menu-icon-patient-active">
-                        <a href="patient.php" class="non-style-link-menu  non-style-link-menu-active"><div><p class="menu-text">مرضاي</p></a></div>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-settings">
-                        <a href="settings.php" class="non-style-link-menu"><div><p class="menu-text">الإعدادات</p></a></div>
+                    <td class="menu-btn menu-icon-patient  menu-active menu-icon-patient-active">
+                        <a href="patient.php" class="non-style-link-menu  non-style-link-menu-active"><div><p class="menu-text">المرضى</p></a></div>
                     </td>
                 </tr>
             </table>
         </div>
-        <?php       
-            $selecttype="مرضاي";
-            $current="مرضاي فقط";
-            if($_POST){
-                if(isset($_POST["search"])){
-                    $keyword=$_POST["search12"];
-                    $sqlmain= "select * from patient where pemail='$keyword' or pname='$keyword' or pname like '$keyword%' or pname like '%$keyword' or pname like '%$keyword%' ";
-                    $selecttype="نتائج البحث:";
-                }
-                
-                if(isset($_POST["filter"])){
-                    if($_POST["showonly"]=='all'){
-                        $sqlmain= "select * from patient";
-                        $selecttype="جميع";
-                        $current="جميع المرضى";
-                    }else{
-                        $sqlmain= "select * from appointment inner join patient on patient.pid=appointment.pid inner join schedule on schedule.scheduleid=appointment.scheduleid where schedule.docid=$userid;";
-                        $selecttype="مرضاي";
-                        $current="مرضاي فقط";
-                    }
-                }
-            }else{
-                $sqlmain= "select * from appointment inner join patient on patient.pid=appointment.pid inner join schedule on schedule.scheduleid=appointment.scheduleid where schedule.docid=$userid;";
-                $selecttype="مرضاي";
-            }
-        ?>
-        <div class="dash-body animate-slide-up delay-100">
+        <div class="dash-body">
             <table border="0" width="100%" style=" border-spacing: 0;margin:0;padding:0;margin-top:25px; ">
                 <tr >
                     <td width="13%">
@@ -167,10 +128,10 @@
                     </td>
                     <td>
                         <form action="" method="post" class="header-search">
-                            <input type="search" name="search12" class="input-text header-searchbar" placeholder="ابحث عن مريض بالاسم أو البريد الإلكتروني" list="patient">&nbsp;&nbsp;
+                            <input type="search" name="search" class="input-text header-searchbar" placeholder="ابحث عن مريض بالاسم أو البريد الإلكتروني" list="patient">&nbsp;&nbsp;
                             <?php
                                 echo '<datalist id="patient">';
-                                $list11 = $database->query($sqlmain);
+                                $list11 = $database->query("select  pname,pemail from patient;");
                                 for ($y=0;$y<$list11->num_rows;$y++){
                                     $row00=$list11->fetch_assoc();
                                     $d=$row00["pname"];
@@ -180,7 +141,7 @@
                                 };
                                 echo ' </datalist>';
                             ?>
-                            <input type="Submit" value="بحث" name="search" class="login-btn btn-primary btn" style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
+                            <input type="Submit" value="بحث" class="login-btn btn-primary btn" style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
                         </form>
                     </td>
                     <td width="15%">
@@ -199,31 +160,17 @@
                 </tr>
                 <tr>
                     <td colspan="4" style="padding-top:10px;">
-                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)"><?php echo $selecttype." (".$list11->num_rows.")"; ?></p>
+                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">جميع المرضى (<?php echo $list11->num_rows; ?>)</p>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="4" style="padding-top:0px;width: 100%;" >
-                        <center>
-                        <table class="filter-container" border="0" >
-                        <form action="" method="post">
-                        <td  style="text-align: left;">إظهار تفاصيل عن: &nbsp;</td>
-                        <td width="30%">
-                        <select name="showonly" id="" class="box filter-container-items" style="width:90% ;height: 37px;margin: 0;" >
-                                    <option value="" disabled selected hidden><?php echo $current   ?></option><br/>
-                                    <option value="my">مرضاي فقط</option><br/>
-                                    <option value="all">جميع المرضى</option><br/>
-                        </select>
-                    </td>
-                    <td width="12%">
-                        <input type="submit"  name="filter" value="تصفية" class=" btn-primary-soft btn button-icon btn-filter"  style="padding: 15px; margin :0;width:100%">
-                        </form>
-                    </td>
-                    </tr>
-                            </table>
-                        </center>
-                    </td>
-                </tr>
+                <?php
+                    if($_POST){
+                        $keyword=$_POST["search"];
+                        $sqlmain= "select * from patient where pemail='$keyword' or pname='$keyword' or pname like '$keyword%' or pname like '%$keyword' or pname like '%$keyword%' ";
+                    }else{
+                        $sqlmain= "select * from patient order by pid desc";
+                    }
+                ?>
                 <tr>
                    <td colspan="4">
                        <center>
@@ -248,7 +195,7 @@
                                     <center>
                                     <img src="../img/notfound.svg" width="25%">
                                     <br>
-                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي مريض يتعلق بكلمات البحث!</p>
+                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي شيء يتعلق بكلمات البحث الخاصة بك!</p>
                                     <a class="non-style-link" href="patient.php"><button  class="login-btn btn-primary-soft btn"  style="display: flex;justify-content: center;align-items: center;margin-right:20px;">&nbsp; عرض الكل &nbsp;</button>
                                     </a>
                                     </center>
@@ -386,10 +333,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <div style="display:flex; gap:10px; padding: 20px 0;">
-                                        <a href="patient.php" style="flex:1;"><input type="button" value="حسناً" class="login-btn btn-primary-soft btn" style="width:100%"></a>
-                                        <a href="add-record.php?id='.$id.'" style="flex:1;"><input type="button" value="إضافة سجل طبي" class="login-btn btn-primary btn" style="width:100%"></a>
-                                    </div>
+                                    <a href="patient.php"><input type="button" value="حسناً" class="login-btn btn-primary-soft btn" ></a>
                                 </td>
                             </tr>
                         </table>

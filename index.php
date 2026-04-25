@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="../css/animations.css">  
     <link rel="stylesheet" href="../css/main.css">  
     <link rel="stylesheet" href="../css/admin.css">
-    <title>لوحة مزود الخدمة | منصة أمان</title>
+    <title>لوحة التحكم | منصة أمان</title>
     <style>
         .dashbord-tables { animation: fadeIn 0.8s ease forwards; }
         .filter-container { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .sub-table,#anim { animation: slideUp 0.6s ease forwards; }
+        .sub-table { animation: slideUp 0.6s ease forwards; }
         .glass-card {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(12px);
@@ -57,33 +57,7 @@
             .menu.active { right: 0; }
             .dash-body { padding: 80px 20px 20px 20px !important; }
         }
-    </style>
-    <script>
-        function toggleMenu() {
-            document.querySelector('.menu').classList.toggle('active');
-        }
-    </script>
-</head>
-<body>
-    <?php
-    header('Content-Type: text/html; charset=utf-8');
-    session_start();
-    if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
-            header("location: ../login.php");
-        }else{
-            $useremail=$_SESSION["user"];
-        }
-    }else{
-        header("location: ../login.php");
-    }
-    include("../connection.php");
-    $userrow = $database->query("select * from doctor where docemail='$useremail'");
-    $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["docid"];
-    $username=$userfetch["docname"];
-    ?>
-    <style>
+        
         .notification-dropdown {
             position: relative;
             display: inline-block;
@@ -113,6 +87,25 @@
         .notif-item:hover { background: #f8fafc; }
         .notif-item:last-child { border: none; }
     </style>
+    <script>
+        function toggleMenu() {
+            document.querySelector('.menu').classList.toggle('active');
+        }
+    </script>
+</head>
+<body>
+    <?php
+    header('Content-Type: text/html; charset=utf-8');
+    session_start();
+    if(isset($_SESSION["user"])){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
+            header("location: ../login.php");
+        }
+    }else{
+        header("location: ../login.php");
+    }
+    include("../connection.php");
+    ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
         <div class="menu">
@@ -125,8 +118,8 @@
                                     <img src="../img/user.png" alt="" width="100%" style="border-radius:50%">
                                 </td>
                                 <td style="padding:0px;margin:0px;">
-                                    <p class="profile-title"><?php echo substr($username,0,15) ?></p>
-                                    <p class="profile-subtitle"><?php echo substr($useremail,0,22) ?></p>
+                                    <p class="profile-title">مدير النظام</p>
+                                    <p class="profile-subtitle">admin@aman.com</p>
                                 </td>
                             </tr>
                             <tr>
@@ -143,46 +136,74 @@
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-appoinment">
-                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">حجوزاتي</p></a></div>
+                    <td class="menu-btn menu-icon-doctor">
+                        <a href="doctors.php" class="non-style-link-menu"><div><p class="menu-text">مزودي الخدمات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
+                    <td class="menu-btn menu-icon-schedule">
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجدول الزمني</p></div></a>
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-appoinment">
+                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">الحجوزات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row">
                     <td class="menu-btn menu-icon-patient">
-                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
-                    </td>
-                </tr>
-                <tr class="menu-row">
-                    <td class="menu-btn menu-icon-settings">
-                        <a href="settings.php" class="non-style-link-menu"><div><p class="menu-text">الإعدادات</p></a></div>
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">المرضى</p></a></div>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="dash-body" style="margin-top:15px">
-            <table border="0" width="100%" style="border-spacing:0;margin:0;padding:0;">
+        <div class="dash-body" style="margin-top: 15px">
+            <table border="0" width="100%" style="border-spacing: 0;margin:0;padding:0;">
                 <tr>
-                    <td colspan="1" class="nav-bar">
-                        <p style="font-size:23px;padding-right:12px;font-weight:700;margin-right:20px;">لوحة التحكم</p>
+                    <td colspan="2" class="nav-bar">
+                        <form action="doctors.php" method="post" class="header-search">
+                            <input type="search" name="search" class="input-text header-searchbar" placeholder="البحث عن مزود خدمة بالاسم أو البريد الإلكتروني" list="doctors">&nbsp;&nbsp;
+                            <?php
+                                echo '<datalist id="doctors">';
+                                $list11 = $database->query("select docname,docemail from doctor;");
+                                for ($y=0;$y<$list11->num_rows;$y++){
+                                    $row00=$list11->fetch_assoc();
+                                    $d=$row00["docname"];
+                                    $c=$row00["docemail"];
+                                    echo "<option value='$d'><br/>";
+                                    echo "<option value='$c'><br/>";
+                                };
+                                echo '</datalist>';
+                            ?>
+                            <input type="Submit" value="بحث" class="login-btn btn-primary-soft btn" style="padding:10px 25px;">
+                        </form>
                     </td>
-                    <td width="25%"></td>
-                    <td width="15%">
+                    <td width="20%">
+                        <div style="display:flex; justify-content: flex-end; align-items: center; gap: 15px; padding-left: 20px;">
+                            <div class="notification-dropdown">
+                                <button class="btn-label" style="display:flex; justify-content:center; align-items:center;">
+                                    <span style="font-size: 20px;">🔔</span>
+                                </button>
+                                <div class="notification-content" style="text-align: right;">
+                                    <p style="font-weight:700; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">نظام التنبيهات</p>
+                                    <div class="notif-item">تنبيه: يوجد 3 مزودين جدد بانتظار المراجعة.</div>
+                                    <div class="notif-item">تم تحديث النظام بنجاح إلى النسخة 2.0.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td width="10%">
                         <p style="font-size:14px;color:#64748b;padding:0;margin:0;text-align:left;">التاريخ</p>
                         <p class="heading-sub12" style="padding:0;margin:0;">
-                        <?php 
-                            date_default_timezone_set('Asia/Aden');
-                            $today = date('Y-m-d');
-                            echo $today;
-                            $patientrow = $database->query("select * from patient;");
-                            $doctorrow = $database->query("select * from doctor;");
-                            $appointmentrow = $database->query("select * from appointment where appodate>='$today';");
-                            $schedulerow = $database->query("select * from schedule where scheduledate='$today';");
-                        ?>
+                            <?php 
+                                date_default_timezone_set('Asia/Aden');
+                                $today = date('Y-m-d');
+                                echo $today;
+                                $patientrow = $database->query("select * from patient;");
+                                $doctorrow = $database->query("select * from doctor;");
+                                $appointmentrow = $database->query("select * from appointment where appodate>='$today';");
+                                $schedulerow = $database->query("select * from schedule where scheduledate='$today';");
+                            ?>
                         </p>
                     </td>
                     <td width="10%">
@@ -191,77 +212,118 @@
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <center>
-                        <div class="filter-container doctor-header animate-slide-up delay-100" style="border:none;width:95%; padding: 40px; margin-bottom: 30px; position: relative; overflow: hidden; background: var(--primary);">
-                            <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: url('../img/b8.jpg'); opacity: 0.1; z-index: -1;"></div>
-                            <div style="position: relative; z-index: 1; text-align: right;">
-                                <h3 class="animate-fade-in delay-200" style="color: rgba(255,255,255,0.9);">طاب يومك يا دكتور</h3>
-                                <h1 class="animate-slide-up delay-300" style="font-size: 38px; margin: 10px 0; color:#fff;"><?php echo $username ?> 🩺</h1>
-                                <p class="animate-fade-in delay-400" style="font-size: 16px; color: rgba(255,255,255,0.85); max-width: 600px; margin-bottom: 25px; line-height: 1.8;">
-                                    أهلاً بك في منصة أمان. يمكنك اليوم متابعة جلساتك المجدولة، مراجعة سجلات المرضى، وتقديم أفضل الخدمات الطبية المنزلية.
-                                </p>
-                                <div class="animate-slide-up delay-500">
-                                    <a href="appointment.php" class="non-style-link"><button class="btn btn-primary" style="background: #fff; color: var(--primary); padding: 5px 40px;">إدارة حجوزاتي</button></a>
+                        <div class="animate-slide-up delay-200" style="padding: 20px 40px;">
+                            <p style="font-size:20px;font-weight:800;margin-bottom: 25px;">الإحصائيات العامة للمنصة</p>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                                <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
+                                    <div class="dashboard-icons" style="margin:0; background: var(--primary-light); color: var(--primary); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">👨‍⚕️</div>
+                                    <div>
+                                        <div class="h3-dashboard">مزودي الخدمات</div>
+                                        <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $doctorrow->num_rows ?></div>
+                                    </div>
+                                </div>
+                                <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
+                                    <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--secondary); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">👥</div>
+                                    <div>
+                                        <div class="h3-dashboard">إجمالي المرضى</div>
+                                        <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $patientrow->num_rows ?></div>
+                                    </div>
+                                </div>
+                                <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
+                                    <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--accent); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎫</div>
+                                    <div>
+                                        <div class="h3-dashboard">حجوزات جديدة</div>
+                                        <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $appointmentrow->num_rows ?></div>
+                                    </div>
+                                </div>
+                                <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
+                                    <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--warning); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">📅</div>
+                                    <div>
+                                        <div class="h3-dashboard">جلسات اليوم</div>
+                                        <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $schedulerow->num_rows ?></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        </center>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <table border="0" width="100%">
+                        <table width="100%" border="0" class="dashbord-tables">
                             <tr>
-                                <td width="50%">
-                                    <div class="animate-slide-up delay-200" style="padding: 0 25px;">
-                                        <p style="font-size:20px;font-weight:700;margin-bottom: 20px;">ملخص الإحصائيات</p>
-                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                            <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
-                                                <div class="dashboard-icons" style="margin:0; background: var(--primary-light); color: var(--primary); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">👥</div>
-                                                <div>
-                                                    <div class="h3-dashboard">إجمالي المرضى</div>
-                                                    <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $patientrow->num_rows ?></div>
-                                                </div>
-                                            </div>
-                                            <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
-                                                <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--secondary); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">📅</div>
-                                                <div>
-                                                    <div class="h3-dashboard">حجوزات جديدة</div>
-                                                    <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $appointmentrow->num_rows ?></div>
-                                                </div>
-                                            </div>
-                                            <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
-                                                <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--accent); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🕒</div>
-                                                <div>
-                                                    <div class="h3-dashboard">جلسات اليوم</div>
-                                                    <div class="h1-dashboard" style="padding:0; margin-top:5px;"><?php echo $schedulerow->num_rows ?></div>
-                                                </div>
-                                            </div>
-                                            <div class="glass-card" style="padding:25px; display: flex; align-items: center; gap: 15px;">
-                                                <div class="dashboard-icons" style="margin:0; background: rgba(5, 150, 105, 0.08); color: var(--warning); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">⭐</div>
-                                                <div>
-                                                    <div class="h3-dashboard">متوسط التقييم</div>
-                                                    <div class="h1-dashboard" style="padding:0; margin-top:5px;">4.9</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <td>
+                                    <p style="padding:10px;padding-right:48px;padding-bottom:0;font-size:21px;font-weight:700;color:var(--primarycolor);">
+                                        الحجوزات القادمة حتى <?php echo date("l",strtotime("+1 week")); ?>
+                                    </p>
+                                    <p style="padding-bottom:15px;padding-right:50px;font-size:14px;font-weight:500;color:#475569;line-height:22px;">
+                                        وصول سريع للحجوزات القادمة خلال 7 أيام<br>
+                                        لمزيد من التفاصيل توجه إلى قسم الحجوزات
+                                    </p>
                                 </td>
                                 <td>
-                                    <p id="anim" style="font-size:20px;font-weight:700;padding-right:40px;">جلساتك القادمة هذا الأسبوع</p>
+                                    <p style="text-align:left;padding:10px;padding-left:48px;padding-bottom:0;font-size:21px;font-weight:700;color:var(--primarycolor);">
+                                        الجلسات القادمة حتى <?php echo date("l",strtotime("+1 week")); ?>
+                                    </p>
+                                    <p style="padding-bottom:15px;text-align:left;padding-left:50px;font-size:14px;font-weight:500;color:#475569;line-height:22px;">
+                                        وصول سريع للجلسات المجدولة خلال 7 أيام<br>
+                                        يمكنك إضافة وحذف الجلسات من قسم الجدول الزمني
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%">
                                     <center>
-                                    <div class="abc scroll" style="height:250px;padding:0;margin:0;">
+                                    <div class="abc scroll" style="height:200px;">
                                     <table width="85%" class="sub-table scrolldown" border="0">
                                         <thead>
                                         <tr>
-                                            <th class="table-headin">عنوان الجلسة</th>
-                                            <th class="table-headin">التاريخ</th>
-                                            <th class="table-headin">الوقت</th>
+                                            <th class="table-headin" style="font-size:12px;">رقم الحجز</th>
+                                            <th class="table-headin">اسم المريض</th>
+                                            <th class="table-headin">مزود الخدمة</th>
+                                            <th class="table-headin">الجلسة</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <?php
                                             $nextweek=date("Y-m-d",strtotime("+1 week"));
+                                            $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid where schedule.scheduledate>='$today' and schedule.scheduledate<='$nextweek' order by schedule.scheduledate desc";
+                                            $result= $database->query($sqlmain);
+                                            if($result->num_rows==0){
+                                                echo '<tr><td colspan="4"><br><br><center>
+                                                <img src="../img/notfound.svg" width="25%"><br>
+                                                <p class="heading-main12" style="font-size:18px;color:#475569">لا توجد حجوزات قادمة</p>
+                                                <a class="non-style-link" href="appointment.php"><button class="login-btn btn-primary-soft btn" style="display:flex;justify-content:center;align-items:center;margin-right:20px;">&nbsp; عرض كل الحجوزات &nbsp;</button></a>
+                                                </center><br><br></td></tr>';
+                                            }else{
+                                                for($x=0;$x<$result->num_rows;$x++){
+                                                    $row=$result->fetch_assoc();
+                                                    echo '<tr>
+                                                        <td style="text-align:center;font-size:22px;font-weight:600;color:var(--btnnicetext);padding:18px;">'.$row["apponum"].'</td>
+                                                        <td style="font-weight:600;">&nbsp;'.substr($row["pname"],0,25).'</td>
+                                                        <td style="font-weight:600;">&nbsp;'.substr($row["docname"],0,25).'</td>
+                                                        <td>'.substr($row["title"],0,15).'</td>
+                                                    </tr>';
+                                                }
+                                            }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    </center>
+                                </td>
+                                <td width="50%" style="padding:0;">
+                                    <center>
+                                    <div class="abc scroll" style="height:200px;padding:0;margin:0;">
+                                    <table width="85%" class="sub-table scrolldown" border="0">
+                                        <thead>
+                                        <tr>
+                                            <th class="table-headin">عنوان الجلسة</th>
+                                            <th class="table-headin">مزود الخدمة</th>
+                                            <th class="table-headin">التاريخ والوقت</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
                                             $sqlmain= "select schedule.scheduleid,schedule.title,doctor.docname,schedule.scheduledate,schedule.scheduletime,schedule.nop from schedule inner join doctor on schedule.docid=doctor.docid where schedule.scheduledate>='$today' and schedule.scheduledate<='$nextweek' order by schedule.scheduledate desc"; 
                                             $result= $database->query($sqlmain);
                                             if($result->num_rows==0){
@@ -275,8 +337,8 @@
                                                     $row=$result->fetch_assoc();
                                                     echo '<tr>
                                                         <td style="padding:18px;">&nbsp;'.substr($row["title"],0,30).'</td>
-                                                        <td style="padding:18px;font-size:13px;">'.substr($row["scheduledate"],0,10).'</td>
-                                                        <td style="text-align:center;">'.substr($row["scheduletime"],0,5).'</td>
+                                                        <td>'.substr($row["docname"],0,20).'</td>
+                                                        <td style="text-align:center;">'.substr($row["scheduledate"],0,10).' '.substr($row["scheduletime"],0,5).'</td>
                                                     </tr>';
                                                 }
                                             }
@@ -284,6 +346,18 @@
                                         </tbody>
                                     </table>
                                     </div>
+                                    </center>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <center>
+                                        <a href="appointment.php" class="non-style-link"><button class="btn-primary btn" style="width:85%">عرض كل الحجوزات</button></a>
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        <a href="schedule.php" class="non-style-link"><button class="btn-primary btn" style="width:85%">عرض كل الجلسات</button></a>
                                     </center>
                                 </td>
                             </tr>

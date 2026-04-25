@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/main.css">  
     <link rel="stylesheet" href="../css/admin.css">
         
-    <title>جلساتي | منصة أمان</title>
+    <title>إدارة الجدول الزمني | منصة أمان</title>
     <style>
         .popup{
             animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -60,20 +60,14 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
             header("location: ../login.php");
-        }else{
-            $useremail=$_SESSION["user"];
         }
     }else{
         header("location: ../login.php");
     }
     
     include("../connection.php");
-    $userrow = $database->query("select * from doctor where docemail='$useremail'");
-    $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["docid"];
-    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -87,41 +81,41 @@
                                     <img src="../img/user.png" alt="" width="100%" style="border-radius:50%">
                                 </td>
                                 <td style="padding:0px;margin:0px;">
-                                    <p class="profile-title"><?php echo substr($username,0,13)  ?>..</p>
-                                    <p class="profile-subtitle"><?php echo substr($useremail,0,22)  ?></p>
+                                    <p class="profile-title">مدير النظام</p>
+                                    <p class="profile-subtitle">admin@aman.com</p>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <a href="../logout.php" ><input type="button" value="تسجيل خروج" class="logout-btn btn-primary-soft btn"></a>
+                                <a href="../logout.php" ><input type="button" value="تسجيل خروج" class="logout-btn btn-primary-soft btn"></a>
                                 </td>
                             </tr>
                     </table>
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-dashbord " >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
+                    <td class="menu-btn menu-icon-dashbord" >
+                        <a href="index.php" class="non-style-link-menu"><div><p class="menu-text">لوحة التحكم</p></a></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-appoinment  ">
-                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">حجوزاتي</p></a></div>
+                    <td class="menu-btn menu-icon-doctor ">
+                        <a href="doctors.php" class="non-style-link-menu "><div><p class="menu-text">مزودي الخدمات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-session menu-active menu-icon-session-active">
-                        <a href="schedule.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">جلساتي</p></div></a>
+                    <td class="menu-btn menu-icon-schedule menu-active menu-icon-schedule-active">
+                        <a href="schedule.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">الجدول الزمني</p></div></a>
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-appoinment">
+                        <a href="appointment.php" class="non-style-link-menu"><div><p class="menu-text">الحجوزات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-patient">
-                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-settings">
-                        <a href="settings.php" class="non-style-link-menu"><div><p class="menu-text">الإعدادات</p></a></div>
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">المرضى</p></a></div>
                     </td>
                 </tr>
             </table>
@@ -133,7 +127,7 @@
                     <a href="schedule.php" ><button  class="login-btn btn-primary-soft btn btn-icon-back"  style="padding-top:11px;padding-bottom:11px;margin-right:20px;width:125px"><font class="tn-in-text">العودة</font></button></a>
                     </td>
                     <td>
-                        <p style="font-size: 23px;padding-right:12px;font-weight: 600;">جلساتي</p>
+                        <p style="font-size: 23px;padding-right:12px;font-weight: 600;">مدير الجلسات</p>
                     </td>
                     <td width="15%">
                         <p style="font-size: 14px;color: #64748b;padding: 0;margin: 0;text-align: left;">التاريخ</p>
@@ -142,7 +136,7 @@
                             date_default_timezone_set('Asia/Aden');
                             $today = date('Y-m-d');
                             echo $today;
-                            $list110 = $database->query("select * from schedule where docid=$userid;");
+                            $list110 = $database->query("select * from schedule;");
                             ?>
                         </p>
                     </td>
@@ -152,8 +146,17 @@
                 </tr>
                
                 <tr>
+                    <td colspan="4" >
+                        <div style="display: flex;margin-top: 40px;">
+                        <div class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49);margin-top: 5px;">جدولة جلسة جديدة</div>
+                        <a href="?action=add-session&id=none&error=0" class="non-style-link"><button  class="login-btn btn-primary btn button-icon"  style="margin-right:25px;background-image: url('../img/icons/add.svg');">إضافة جلسة</button>
+                        </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="4" style="padding-top:10px;width: 100%;" >
-                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">جلساتي (<?php echo $list110->num_rows; ?>) </p>
+                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">جميع الجلسات (<?php echo $list110->num_rows; ?>)</p>
                     </td>
                 </tr>
                 <tr>
@@ -167,6 +170,21 @@
                         <form action="" method="post">
                             <input type="date" name="sheduledate" id="date" class="input-text filter-container-items" style="margin: 0;width: 95%;">
                         </td>
+                        <td width="5%" style="text-align: center;">المزود:</td>
+                        <td width="30%">
+                        <select name="docid" id="" class="box filter-container-items" style="width:90% ;height: 37px;margin: 0;" >
+                            <option value="" disabled selected hidden>اختر اسم مزود الخدمة من القائمة</option><br/>
+                            <?php 
+                                $list11 = $database->query("select * from doctor order by docname asc;");
+                                for ($y=0;$y<$list11->num_rows;$y++){
+                                    $row00=$list11->fetch_assoc();
+                                    $sn=$row00["docname"];
+                                    $id00=$row00["docid"];
+                                    echo "<option value=".$id00.">$sn</option><br/>";
+                                };
+                                ?>
+                        </select>
+                    </td>
                     <td width="12%">
                         <input type="submit"  name="filter" value="تصفية" class=" btn-primary-soft btn button-icon btn-filter"  style="padding: 15px; margin :0;width:100%">
                         </form>
@@ -178,12 +196,29 @@
                 </tr>
                 
                 <?php
-                $sqlmain= "select schedule.scheduleid,schedule.title,doctor.docname,schedule.scheduledate,schedule.scheduletime,schedule.nop from schedule inner join doctor on schedule.docid=doctor.docid where doctor.docid=$userid ";
                     if($_POST){
+                        $sqlpt1="";
                         if(!empty($_POST["sheduledate"])){
                             $sheduledate=$_POST["sheduledate"];
-                            $sqlmain.=" and schedule.scheduledate='$sheduledate' ";
+                            $sqlpt1=" schedule.scheduledate='$sheduledate' ";
                         }
+                        $sqlpt2="";
+                        if(!empty($_POST["docid"])){
+                            $docid=$_POST["docid"];
+                            $sqlpt2=" doctor.docid=$docid ";
+                        }
+                        $sqlmain= "select schedule.scheduleid,schedule.title,doctor.docname,schedule.scheduledate,schedule.scheduletime,schedule.nop from schedule inner join doctor on schedule.docid=doctor.docid ";
+                        $sqllist=array($sqlpt1,$sqlpt2);
+                        $sqlkeywords=array(" where "," and ");
+                        $key2=0;
+                        foreach($sqllist as $key){
+                            if(!empty($key)){
+                                $sqlmain.=$sqlkeywords[$key2].$key;
+                                $key2++;
+                            };
+                        };
+                    }else{
+                        $sqlmain= "select schedule.scheduleid,schedule.title,doctor.docname,schedule.scheduledate,schedule.scheduletime,schedule.nop from schedule inner join doctor on schedule.docid=doctor.docid  order by schedule.scheduledate desc";
                     }
                 ?>
                   
@@ -195,6 +230,7 @@
                         <thead>
                         <tr>
                             <th class="table-headin">عنوان الجلسة</th>
+                            <th class="table-headin">مزود الخدمة</th>
                             <th class="table-headin">التاريخ والوقت المجدول</th>
                             <th class="table-headin">أقصى عدد للحجز</th>
                             <th class="table-headin">العمليات</th>
@@ -210,7 +246,7 @@
                                     <center>
                                     <img src="../img/notfound.svg" width="25%">
                                     <br>
-                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي جلسات متعلقة بالبحث!</p>
+                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي شيء يتعلق بكلمات البحث الخاصة بك!</p>
                                     <a class="non-style-link" href="schedule.php"><button  class="login-btn btn-primary-soft btn"  style="display: flex;justify-content: center;align-items: center;margin-right:20px;">&nbsp; عرض الكل &nbsp;</button>
                                     </a>
                                     </center>
@@ -229,13 +265,14 @@
                                     $nop=$row["nop"];
                                     echo '<tr>
                                         <td> &nbsp;'.substr($title,0,30).'</td>
+                                        <td>'.substr($docname,0,20).'</td>
                                         <td style="text-align:center;">'.substr($scheduledate,0,10).' '.substr($scheduletime,0,5).'</td>
                                         <td style="text-align:center;">'.$nop.'</td>
                                         <td>
                                         <div style="display:flex;justify-content: center;">
                                         <a href="?action=view&id='.$scheduleid.'" class="non-style-link"><button  class="btn-primary-soft btn button-icon btn-view"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">عرض</font></button></a>
                                        &nbsp;&nbsp;&nbsp;
-                                       <a href="?action=drop&id='.$scheduleid.'&name='.$title.'" class="non-style-link"><button  class="btn-primary-soft btn button-icon btn-delete"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">إلغاء الجلسة</font></button></a>
+                                       <a href="?action=drop&id='.$scheduleid.'&name='.$title.'" class="non-style-link"><button  class="btn-primary-soft btn button-icon btn-delete"  style="padding-left: 40px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"><font class="tn-in-text">حذف</font></button></a>
                                         </div>
                                         </td>
                                     </tr>';
@@ -255,7 +292,120 @@
     if($_GET){
         $id=$_GET["id"];
         $action=$_GET["action"];
-        if($action=='drop'){
+        if($action=='add-session'){
+            echo '
+            <div id="popup1" class="overlay">
+                    <div class="popup">
+                    <center>
+                        <a class="close" href="schedule.php">&times;</a> 
+                        <div style="display: flex;justify-content: center;">
+                        <div class="abc">
+                        <table width="80%" class="sub-table scrolldown add-doc-form-container" border="0">
+                            <tr>
+                                <td class="label-td" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p style="padding: 0;margin: 0;text-align: right;font-size: 25px;font-weight: 500;">إضافة جلسة جديدة</p><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                <form action="add-session.php" method="POST" class="add-new-form">
+                                    <label for="title" class="form-label">عنوان الجلسة : </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <input type="text" name="title" class="input-text" placeholder="اسم الجلسة" required><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <label for="docid" class="form-label">اختر مزود الخدمة: </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <select name="docid" id="" class="box" >
+                                    <option value="" disabled selected hidden>اختر الاسم من القائمة</option><br/>';
+                                        $list11 = $database->query("select * from doctor order by docname asc;");
+                                        for ($y=0;$y<$list11->num_rows;$y++){
+                                            $row00=$list11->fetch_assoc();
+                                            $sn=$row00["docname"];
+                                            $id00=$row00["docid"];
+                                            echo "<option value=".$id00.">$sn</option><br/>";
+                                        };
+                        echo     '       </select><br><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <label for="nop" class="form-label">أقصى عدد للمرضى / الحجوزات : </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <input type="number" name="nop" class="input-text" min="0"  placeholder="العدد النهائي للحجوزات" required><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <label for="date" class="form-label">تاريخ الجلسة: </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <input type="date" name="date" class="input-text" min="'.date('Y-m-d').'" required><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <label for="time" class="form-label">وقت الجدول: </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label-td" colspan="2">
+                                    <input type="time" name="time" class="input-text" placeholder="الوقت" required><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input type="reset" value="إعادة تعيين" class="login-btn btn-primary-soft btn" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="submit" value="إتمام الجدولة" class="login-btn btn-primary btn" name="shedulesubmit">
+                                </td>
+                            </tr>
+                            </form>
+                            </tr>
+                        </table>
+                        </div>
+                        </div>
+                    </center>
+                    <br><br>
+            </div>
+            </div>
+            ';
+        }elseif($action=='session-added'){
+            $titleget=$_GET["title"];
+            echo '
+            <div id="popup1" class="overlay">
+                    <div class="popup">
+                    <center>
+                    <br><br>
+                        <h2>تمت جدولة الجلسة بنجاح</h2>
+                        <a class="close" href="schedule.php">&times;</a>
+                        <div class="content">
+                        تمت جدولة '.substr($titleget,0,40).'.<br><br>
+                        </div>
+                        <div style="display: flex;justify-content: center;">
+                        <a href="schedule.php" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"><font class="tn-in-text">&nbsp;&nbsp;حسناً&nbsp;&nbsp;</font></button></a>
+                        <br><br><br><br>
+                        </div>
+                    </center>
+            </div>
+            </div>
+            ';
+        }elseif($action=='drop'){
             $nameget=$_GET["name"];
             echo '
             <div id="popup1" class="overlay">
@@ -264,7 +414,7 @@
                         <h2>هل أنت متأكد؟</h2>
                         <a class="close" href="schedule.php">&times;</a>
                         <div class="content">
-                            أنت على وشك حذف هذه الجلسة<br>('.substr($nameget,0,40).').
+                            أنت على وشك حذف هذا السجل<br>('.substr($nameget,0,40).').
                         </div>
                         <div style="display: flex;justify-content: center;">
                         <a href="delete-session.php?id='.$id.'" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;نعم&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
@@ -291,7 +441,8 @@
                     <div class="popup" style="width: 70%;">
                     <center>
                         <a class="close" href="schedule.php">&times;</a>
-                        <div style="display: flex;justify-content: center;">
+                        <div class="content"></div>
+                        <div class="abc scroll" style="display: flex;justify-content: center;">
                         <table width="80%" class="sub-table scrolldown add-doc-form-container" border="0">
                             <tr>
                                 <td>
@@ -340,7 +491,7 @@
                             </tr>
                             <tr>
                                 <td class="label-td" colspan="2">
-                                    <label for="spec" class="form-label"><b>المرضى المسجلين لهذه الجلسة:</b> ('.$result12->num_rows."/".$nop.')</label>
+                                    <label for="spec" class="form-label"><b>المرضى المسجلين بالفعل لهذه الجلسة:</b> ('.$result12->num_rows."/".$nop.')</label>
                                     <br><br>
                                 </td>
                             </tr>
@@ -364,7 +515,7 @@
                                              <center>
                                              <img src="../img/notfound.svg" width="25%">
                                              <br>
-                                             <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي حجز لهذا المريض!</p>
+                                             <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي حجز لهذه الجلسة!</p>
                                              </center>
                                              </td>
                                              </tr>';
@@ -379,7 +530,7 @@
                                              echo '<tr style="text-align:center;">
                                                 <td>'.substr($pid,0,15).'</td>
                                                  <td style="font-weight:600;padding:25px">'.substr($pname,0,25).'</td >
-                                                 <td style="text-align:center;font-size:23px;font-weight:500; color: #059669;">'.$apponum.'</td>
+                                                 <td style="text-align:center;font-size:23px;font-weight:500; color: var(--btnnicetext);">'.$apponum.'</td>
                                                  <td>'.substr($ptel,0,25).'</td>
                                              </tr>';
                                          }

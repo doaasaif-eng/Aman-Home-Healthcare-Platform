@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/main.css">  
     <link rel="stylesheet" href="../css/admin.css">
         
-    <title>حجوزاتي | منصة أمان</title>
+    <title>إدارة الحجوزات | منصة أمان</title>
     <style>
         .popup{
             animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -60,20 +60,14 @@
     session_start();
 
     if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
+        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
             header("location: ../login.php");
-        }else{
-            $useremail=$_SESSION["user"];
         }
     }else{
         header("location: ../login.php");
     }
     
     include("../connection.php");
-    $userrow = $database->query("select * from doctor where docemail='$useremail'");
-    $userfetch=$userrow->fetch_assoc();
-    $userid= $userfetch["docid"];
-    $username=$userfetch["docname"];
     ?>
     <div class="container animate-fade-in">
         <button class="menu-toggle" onclick="toggleMenu()">☰ القائمة</button>
@@ -87,8 +81,8 @@
                                     <img src="../img/user.png" alt="" width="100%" style="border-radius:50%">
                                 </td>
                                 <td style="padding:0px;margin:0px;">
-                                    <p class="profile-title"><?php echo substr($username,0,13)  ?>..</p>
-                                    <p class="profile-subtitle"><?php echo substr($useremail,0,22)  ?></p>
+                                    <p class="profile-title">مدير النظام</p>
+                                    <p class="profile-subtitle">admin@aman.com</p>
                                 </td>
                             </tr>
                             <tr>
@@ -100,28 +94,28 @@
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-dashbord " >
-                        <a href="index.php" class="non-style-link-menu "><div><p class="menu-text">لوحة التحكم</p></a></div></a>
+                    <td class="menu-btn menu-icon-dashbord" >
+                        <a href="index.php" class="non-style-link-menu"><div><p class="menu-text">لوحة التحكم</p></a></div></a>
                     </td>
                 </tr>
                 <tr class="menu-row">
-                    <td class="menu-btn menu-icon-appoinment  menu-active menu-icon-appoinment-active">
-                        <a href="appointment.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">حجوزاتي</p></a></div>
+                    <td class="menu-btn menu-icon-doctor ">
+                        <a href="doctors.php" class="non-style-link-menu "><div><p class="menu-text">مزودي الخدمات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-session">
-                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">جلساتي</p></div></a>
+                    <td class="menu-btn menu-icon-schedule ">
+                        <a href="schedule.php" class="non-style-link-menu"><div><p class="menu-text">الجدول الزمني</p></div></a>
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-appoinment menu-active menu-icon-appoinment-active">
+                        <a href="appointment.php" class="non-style-link-menu non-style-link-menu-active"><div><p class="menu-text">الحجوزات</p></a></div>
                     </td>
                 </tr>
                 <tr class="menu-row" >
                     <td class="menu-btn menu-icon-patient">
-                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">مرضاي</p></a></div>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-settings">
-                        <a href="settings.php" class="non-style-link-menu"><div><p class="menu-text">الإعدادات</p></a></div>
+                        <a href="patient.php" class="non-style-link-menu"><div><p class="menu-text">المرضى</p></a></div>
                     </td>
                 </tr>
             </table>
@@ -142,7 +136,7 @@
                             date_default_timezone_set('Asia/Aden');
                             $today = date('Y-m-d');
                             echo $today;
-                            $list110 = $database->query("select * from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  where  doctor.docid=$userid ");
+                            $list110 = $database->query("select * from appointment;");
                             ?>
                         </p>
                     </td>
@@ -153,7 +147,7 @@
                
                 <tr>
                     <td colspan="4" style="padding-top:10px;width: 100%;" >
-                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">حجوزاتي (<?php echo $list110->num_rows; ?>)</p>
+                        <p class="heading-main12" style="margin-right: 45px;font-size:18px;color:rgb(49, 49, 49)">جميع الحجوزات (<?php echo $list110->num_rows; ?>)</p>
                     </td>
                 </tr>
                 <tr>
@@ -167,6 +161,21 @@
                         <form action="" method="post">
                             <input type="date" name="sheduledate" id="date" class="input-text filter-container-items" style="margin: 0;width: 95%;">
                         </td>
+                        <td width="5%" style="text-align: center;">المزود:</td>
+                        <td width="30%">
+                        <select name="docid" id="" class="box filter-container-items" style="width:90% ;height: 37px;margin: 0;" >
+                            <option value="" disabled selected hidden>اختر اسم مزود الخدمة من القائمة</option><br/>
+                            <?php 
+                                $list11 = $database->query("select * from doctor order by docname asc;");
+                                for ($y=0;$y<$list11->num_rows;$y++){
+                                    $row00=$list11->fetch_assoc();
+                                    $sn=$row00["docname"];
+                                    $id00=$row00["docid"];
+                                    echo "<option value=".$id00.">$sn</option><br/>";
+                                };
+                                ?>
+                        </select>
+                    </td>
                     <td width="12%">
                         <input type="submit"  name="filter" value="تصفية" class=" btn-primary-soft btn button-icon btn-filter"  style="padding: 15px; margin :0;width:100%">
                         </form>
@@ -178,12 +187,29 @@
                 </tr>
                 
                 <?php
-                    $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  where  doctor.docid=$userid ";
                     if($_POST){
+                        $sqlpt1="";
                         if(!empty($_POST["sheduledate"])){
                             $sheduledate=$_POST["sheduledate"];
-                            $sqlmain.=" and schedule.scheduledate='$sheduledate' ";
+                            $sqlpt1=" schedule.scheduledate='$sheduledate' ";
+                        }
+                        $sqlpt2="";
+                        if(!empty($_POST["docid"])){
+                            $docid=$_POST["docid"];
+                            $sqlpt2=" doctor.docid=$docid ";
+                        }
+                        $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid";
+                        $sqllist=array($sqlpt1,$sqlpt2);
+                        $sqlkeywords=array(" where "," and ");
+                        $key2=0;
+                        foreach($sqllist as $key){
+                            if(!empty($key)){
+                                $sqlmain.=$sqlkeywords[$key2].$key;
+                                $key2++;
+                            };
                         };
+                    }else{
+                        $sqlmain= "select appointment.appoid,schedule.scheduleid,schedule.title,doctor.docname,patient.pname,schedule.scheduledate,schedule.scheduletime,appointment.apponum,appointment.appodate from schedule inner join appointment on schedule.scheduleid=appointment.scheduleid inner join patient on patient.pid=appointment.pid inner join doctor on schedule.docid=doctor.docid  order by schedule.scheduledate desc";
                     }
                 ?>
                   
@@ -196,6 +222,7 @@
                         <tr>
                             <th class="table-headin">اسم المريض</th>
                             <th class="table-headin">رقم الحجز</th>
+                            <th class="table-headin">مزود الخدمة</th>
                             <th class="table-headin">عنوان الجلسة</th>
                             <th class="table-headin">تاريخ ووقت الجلسة</th>
                             <th class="table-headin">تاريخ الحجز</th>
@@ -212,7 +239,7 @@
                                     <center>
                                     <img src="../img/notfound.svg" width="25%">
                                     <br>
-                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي شيء يتعلق بكلمات البحث!</p>
+                                    <p class="heading-main12" style="margin-right: 45px;font-size:20px;color:rgb(49, 49, 49)">لم نجد أي شيء يتعلق بكلمات البحث الخاصة بك!</p>
                                     <a class="non-style-link" href="appointment.php"><button  class="login-btn btn-primary-soft btn"  style="display: flex;justify-content: center;align-items: center;margin-right:20px;">&nbsp; عرض الكل &nbsp;</button>
                                     </a>
                                     </center>
@@ -235,8 +262,9 @@
                                     echo '<tr >
                                         <td style="font-weight:600;"> &nbsp;'.substr($pname,0,25).'</td >
                                         <td style="text-align:center;font-size:23px;font-weight:500; color: #059669;">'.$apponum.'</td>
+                                        <td>'.substr($docname,0,25).'</td>
                                         <td>'.substr($title,0,15).'</td>
-                                        <td style="text-align:center;;">'.substr($scheduledate,0,10).' @'.substr($scheduletime,0,5).'</td>
+                                        <td style="text-align:center;font-size:12px;">'.substr($scheduledate,0,10).' <br>'.substr($scheduletime,0,5).'</td>
                                         <td style="text-align:center;">'.$appodate.'</td>
                                         <td>
                                         <div style="display:flex;justify-content: center;">
